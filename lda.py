@@ -13,7 +13,7 @@ np.set_printoptions(threshold=100000, linewidth=200)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-ddir', nargs='?', help='directory to emails')
-    parser.add_argument('-n_topics', nargs='?', default=10, type=int, help='number of topics')
+    parser.add_argument('-n_topics', nargs='?', default=4, type=int, help='number of topics')
     parser.add_argument('-n_words', nargs='?', default=10, type=int, help='number of words to display per topic')
     parser.add_argument('-t', action="store_true", help='run on test data')
     parser.add_argument('-filter_stop_words', action="store_true", help='run on test data')
@@ -53,25 +53,18 @@ if __name__ == '__main__':
         index = word_to_index[word]
         index_to_word[index] = word
 
-    scores = list()
-    for i in xrange(1, 20):
-        # fit LDA
-        lda = LDA(n_topics=i)#args.n_topics)
-        lda.fit(M_docword)
-
-        scores.append(lda.score(M_docword))
-    plt.plot(range(1,len(scores)+1), scores)
-    plt.xticks(range(1,len(scores)+1))
-    plt.show()
+    # fit LDA
+    lda = LDA(n_topics=args.n_topics)
+    lda.fit(M_docword)
 
     # p(word|topic)  (n_topics X n_words)
     w_z = lda.components_ / lda.components_.sum(axis=1)[:, np.newaxis]
     # p(topic|document)  (n_documents X n_topics)
     z_d = lda.transform(M_docword)
 
-    # print "w_z\n", w_z
-    # print "\nz_d\n", z_d
-    # print "\n"
+    print "w_z\n", w_z
+    print "\nz_d\n", z_d
+    print "\n"
 
     top_word_args = np.argsort(w_z, axis=1)[:,-1*args.n_words:]
     top_words = np.chararray((w_z.shape[0], args.n_words, 2), itemsize=100)
@@ -79,4 +72,4 @@ if __name__ == '__main__':
         top_words[i,:,0] = index_to_word[top_word_args[i]]
         top_words[i,:,1] = w_z[i,top_word_args[i]]
 
-    # print top_words
+    print top_words
