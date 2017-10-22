@@ -44,8 +44,7 @@ if __name__ == '__main__':
 
     # create the document-word matrix (n_documents X n_words)
     vectorizer = CountVectorizer()
-    vectorizer.fit(documents)
-    M_docword = vectorizer.transform(documents)
+    M_docword = vectorizer.fit_transform(documents)
 
     word_to_index = vectorizer.vocabulary_
     index_to_word = np.chararray(len(word_to_index), itemsize=100)
